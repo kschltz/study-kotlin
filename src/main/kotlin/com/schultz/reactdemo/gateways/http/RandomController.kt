@@ -1,12 +1,10 @@
 package com.schultz.reactdemo.gateways.http
 
 import com.schultz.reactdemo.usecases.RandomNumberGenerator
-import org.springframework.cglib.core.Local
 import org.springframework.http.MediaType
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RestController
 import reactor.core.publisher.Flux
-import reactor.core.publisher.SynchronousSink
 import reactor.util.function.Tuple2
 import java.time.Duration
 import java.time.LocalDateTime
@@ -32,5 +30,6 @@ class RandomController(val randGen: RandomNumberGenerator) {
         val timeStream = Flux.fromStream(Stream.generate { LocalDateTime.now().toString() })
 
         return delayedRandInts.zipWith(timeStream).cache(10).log()
+
     }
 }
