@@ -1,4 +1,4 @@
-package com.schultz.reactdemo.usecases
+package com.schultz.reactdemo.usecases.random
 
 import org.springframework.stereotype.Service
 import reactor.core.publisher.Flux

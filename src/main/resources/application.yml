@@ -1,3 +1,8 @@
 endpoints:
   beans:
     enabled: true
+
+spring:
+  data:
+    mongodb.host: "localhost"
+    mngodb.name: "embeded_db"
