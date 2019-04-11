@@ -9,11 +9,12 @@ import org.springframework.stereotype.Service
 class DBBoot(private val insertProfile: InsertProfile) : CommandLineRunner {
     override fun run(vararg args: String?) {
 
-        listOf("Kaue", "Jeremias", "Manoel").forEach { name ->
-            val profile = Profile(name)
-            val savedProfile = insertProfile.execute(profile)
-            print("Name: $savedProfile")
-        }
+        repeat(1000000, { saveProfile("Kaue") })
+    }
 
+    private fun saveProfile(name: String) {
+        val profile = Profile(name)
+        insertProfile.execute(profile)
+                .subscribe({})
     }
 }
