@@ -9,10 +9,6 @@ import reactor.core.publisher.Mono
 class ProfileDBGateway(private val repository: ProfileMongoRepository) {
 
     fun save(profile: Profile): Mono<Profile> {
-        return repository.insert(profile)
-    }
-
-    fun update(profile: Profile): Mono<Profile> {
         return repository.save(profile)
     }
 

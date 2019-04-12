@@ -1,18 +1,19 @@
 package com.schultz.reactdemo.gateways.http.profile
 
 import com.schultz.reactdemo.domain.Profile
+import com.schultz.reactdemo.gateways.database.ProfileDBGateway
 import com.schultz.reactdemo.usecases.profile.GetProfileByName
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
-import org.springframework.web.bind.annotation.GetMapping
-import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.RequestParam
-import org.springframework.web.bind.annotation.RestController
+import org.springframework.web.bind.annotation.*
 import reactor.core.publisher.Flux
+import reactor.core.publisher.Mono
+import java.time.Duration
 
 @RestController
 @RequestMapping("/profile")
-class ProfileController(private val profileByName: GetProfileByName) {
+class ProfileController(private val profileByName: GetProfileByName,
+                        private val profileGateway: ProfileDBGateway) {
 
 
     @GetMapping(produces = [MediaType.APPLICATION_JSON_VALUE])
@@ -24,5 +25,20 @@ class ProfileController(private val profileByName: GetProfileByName) {
                 .doOnError({ throwable -> print("error: ${throwable.message}") })
                 .doOnComplete { print("\n\nterminated\n\n") }
         return ResponseEntity.ok(flux)
+    }
+
+    @PutMapping(produces = [MediaType.APPLICATION_JSON_VALUE], consumes = [MediaType.APPLICATION_JSON_VALUE])
+    fun saveProfile(@RequestBody profile: Profile): ResponseEntity<Mono<Profile>> {
+        val saved = profileGateway.save(profile)
+
+        return ResponseEntity.ok(saved)
+    }
+
+    @GetMapping(value = ["/all"], produces = [MediaType.APPLICATION_STREAM_JSON_VALUE])
+    fun listAll(): ResponseEntity<Flux<Profile>> {
+        val listProfiles = profileGateway.listProfiles()
+                .delayElements(Duration.ofMillis(100))
+
+        return ResponseEntity.ok(listProfiles)
     }
 }

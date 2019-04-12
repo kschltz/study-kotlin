@@ -6,7 +6,7 @@ import org.springframework.stereotype.Service
 import reactor.core.publisher.Mono
 
 @Service
-class InsertProfile(private val profileGateway: ProfileDBGateway) {
+class SaveProfile(private val profileGateway: ProfileDBGateway) {
 
     fun execute(profile: Profile): Mono<Profile> {
         return profileGateway.save(profile)
