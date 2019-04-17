@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.*
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
 import java.time.Duration
+import java.time.LocalDateTime
 
 @RestController
 @RequestMapping("/profile")
@@ -23,7 +24,8 @@ class ProfileController(private val profileByName: GetProfileByName,
 
         val flux = profileByName.execute(name)
                 .doOnError({ throwable -> print("error: ${throwable.message}") })
-                .doOnComplete { print("\n\nterminated\n\n") }
+                .doOnSubscribe { print("Started listing at: ${LocalDateTime.now()}") }
+                .doOnComplete { print("\n\nterminated listing at: ${LocalDateTime.now()}\n\n") }
         return ResponseEntity.ok(flux)
     }
 
