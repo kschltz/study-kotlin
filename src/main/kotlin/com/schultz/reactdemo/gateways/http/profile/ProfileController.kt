@@ -7,9 +7,8 @@ import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import reactor.core.publisher.Flux
-import reactor.core.publisher.Mono
-import java.time.Duration
 import java.time.LocalDateTime
+import java.util.stream.Stream
 
 @RestController
 @RequestMapping("/profile")
@@ -30,16 +29,21 @@ class ProfileController(private val profileByName: GetProfileByName,
     }
 
     @PutMapping(produces = [MediaType.APPLICATION_JSON_VALUE], consumes = [MediaType.APPLICATION_JSON_VALUE])
-    fun saveProfile(@RequestBody profile: Profile): ResponseEntity<Mono<Profile>> {
-        val saved = profileGateway.save(profile)
+    fun saveMultiProfiles(@RequestParam(defaultValue = "1") count: Long,
+                          @RequestBody profile: Profile): ResponseEntity<Any> {
 
-        return ResponseEntity.ok(saved)
+        Flux.fromStream(Stream.iterate(0) { i -> i + 1 })
+                .take(count)
+                .doOnSubscribe { print("Started saving: ${LocalDateTime.now()}") }
+                .doOnTerminate { print("\n\n\ndone Saving ${LocalDateTime.now()}") }
+                .subscribe { profileGateway.save(profile.copy()).subscribe() }
+        return ResponseEntity.ok().build()
+
     }
 
     @GetMapping(value = ["/all"], produces = [MediaType.APPLICATION_STREAM_JSON_VALUE])
     fun listAll(): ResponseEntity<Flux<Profile>> {
         val listProfiles = profileGateway.listProfiles()
-                .delayElements(Duration.ofMillis(100))
 
         return ResponseEntity.ok(listProfiles)
     }
