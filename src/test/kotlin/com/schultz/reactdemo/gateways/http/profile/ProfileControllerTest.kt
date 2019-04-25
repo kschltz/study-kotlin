@@ -2,7 +2,9 @@ package com.schultz.reactdemo.gateways.http.profile
 
 import com.schultz.reactdemo.domain.Profile
 import com.schultz.reactdemo.gateways.database.ProfileMongoRepository
+import io.mockk.clearAllMocks
 import io.mockk.every
+import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
@@ -22,10 +24,9 @@ internal class ProfileControllerTest(@Autowired private val controller: ProfileC
     @BeforeEach
     fun setup() {
 
-
         every { mongoRepo.save(any<Profile>()) } returns just(Profile("Kaue"))
         val source = iterate(0) { it + 1 }.map { Profile("Kaue") }
-        every { mongoRepo.findAll() } returns fromStream(source).take(50)
+        every { mongoRepo.findAll() } returns fromStream(source).take(1)
 
     }
 
@@ -39,6 +40,11 @@ internal class ProfileControllerTest(@Autowired private val controller: ProfileC
                 .thenConsumeWhile { it.name == "Kaue" }
                 .verifyComplete()
 
+    }
+
+    @AfterEach
+    fun cleanup() {
+        clearAllMocks()
     }
 
 }
