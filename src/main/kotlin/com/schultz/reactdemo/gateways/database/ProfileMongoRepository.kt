@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service
 import reactor.core.publisher.Flux
 
 @Service
+@org.springframework.context.annotation.Profile("!test")
 interface ProfileMongoRepository : ReactiveMongoRepository<Profile, String> {
 
     fun findByName(name: String): Flux<Profile>
